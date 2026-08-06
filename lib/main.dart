@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:clean_architect_cli/src/generators/template_generator.dart';
-import 'package:clean_architect_cli/src/commands/init_command.dart';
-import 'package:clean_architect_cli/src/commands/backend_command.dart';
-import 'package:args/command_runner.dart';
+import 'package:clean_architect_cli/src/generators/folder_generator.dart';
 
 void main() {
   runApp(const CleanArchitectGui());
@@ -62,10 +60,6 @@ class _ProjectGeneratorPageState extends State<ProjectGeneratorPage> {
     });
 
     try {
-      final runner = CommandRunner('clean_architect_cli', 'GUI runner')
-        ..addCommand(InitCommand())
-        ..addCommand(BackendCommand());
-
       final targetPath = '\${_pathController.text}/\$name';
       
       // Creating the project directory manually for the GUI
@@ -75,8 +69,31 @@ class _ProjectGeneratorPageState extends State<ProjectGeneratorPage> {
       }
 
       if (_projectType == 'mobile') {
-        final generator = TemplateGenerator(targetPath, _stateManager);
-        await generator.generateInitTemplate();
+        // Create base flutter project first
+        await Process.run('flutter', ['create', targetPath]);
+        
+        // Generate Clean Architecture Scaffold
+        final coreDirs = [
+          '\$targetPath/lib/core/error',
+          '\$targetPath/lib/core/network',
+          '\$targetPath/lib/core/usecases',
+          '\$targetPath/lib/core/utils',
+          '\$targetPath/lib/core/theme',
+          '\$targetPath/lib/features',
+        ];
+        FolderGenerator.createDirs(coreDirs);
+        TemplateGenerator.createFile(
+          '\$targetPath/lib/core/usecases/usecase.dart',
+          TemplateGenerator.getUseCaseTemplate(),
+        );
+        TemplateGenerator.createFile(
+          '\$targetPath/lib/injection_container.dart',
+          TemplateGenerator.getInjectionContainerTemplate(),
+        );
+        TemplateGenerator.createFile(
+          '\$targetPath/lib/core/theme/app_theme.dart',
+          TemplateGenerator.getThemeTemplate(),
+        );
         setState(() => _statusMessage = '✅ Mobile project \$name generated successfully at \$targetPath');
       } else {
         // Backend command logic requires a process run or refactoring. 
