@@ -35,7 +35,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   clean_architect_cli:
-    path: ../flutter-architect
+    git:
+      url: https://github.com/verf1CT/flutter-architect.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
