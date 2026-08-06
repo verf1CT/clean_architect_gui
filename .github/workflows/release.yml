@@ -22,7 +22,7 @@ jobs:
           - os: windows-latest
             target: windows
             artifact_name: clean_architect_gui-windows.zip
-            build_path: build/windows/runner/Release
+            build_path: build/windows/x64/runner/Release
           - os: ubuntu-latest
             target: linux
             artifact_name: clean_architect_gui-linux.tar.gz
